@@ -1,4 +1,20 @@
+
+var apiUrl = 'http://api.rottentomatoes.com/api/public/v1.0/movies.json?apikey=j23zuzdpapq9ny3watvc9kja';
+var requestApi = function (query, callback) {
+
+  // Request API
+  //
+  $.ajax({
+    url: apiUrl,
+    data: {
+      q: query
+    },
+    dataType: 'jsonp'
+  }).success(callback);
+
+}
 // My Application
+//
 //
 //
 var itemHtml = function (thumbnailSrc, title) {
@@ -14,25 +30,32 @@ var itemHtml = function (thumbnailSrc, title) {
   ].join('');
 };
 
+var detailsHtml = function (title, imgSrc, detailList){
+  return [
+    '<div id=#details>',
+    '   <h3>',
+          title,
+    '   </h3>',
+    '   <img src="',
+          imgSrc,
+    '   ">',
+    '   <ul>',
+          detailsList.join(''),
+    '   </ul>',
+    '</div>'
+  ].join('');
+};
 
-$('#movieSearchForm').on('submit', function () {
+$('#movieDetail').on('click', function (event) {});
+
+$('#movieSearchForm').on('submit', function (event) {
+  event.preventDefault();
+
   var movieTitle = $('#movieSearchForm input').val();
 
-  $.getJSON('spiderman-api-call.json').success(function(response, movieTitle){
-    var movieListData =  response.movies;
-    var movieList = movieListData.map(function (movieItem) {
 
-    console.log('HOLA!');
-      if(movieItem.title === movieTitle)
-        return itemHtml(movieItem.posters.thumbnail, movieItem.title);
-    });
+  requestApi(movieTitle, myApp);
 
-    $('#resultList').get(0).innerHTML = [
-      '<ul>',
-        movieList.join(''),
-      '</ul>'
-    ].join('');
-  });
 });
 
 var myApp = function (response) {
@@ -48,10 +71,6 @@ var myApp = function (response) {
       '</ul>'
   ].join('');
 
-  console.log('HALLO!');
 };
 
 
-// Request API
-//
-$.getJSON('spiderman-api-call.json').success(myApp);
