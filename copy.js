@@ -1,8 +1,10 @@
-
+              
 var apiUrl = 'http://api.rottentomatoes.com/api/public/v1.0/movies.json';
 
-var requestApi = function (data, callback) {
 
+var requestApi = function (data, callback) {
+  // Request API
+  //
   var params = $.extend({
     apikey: 'j23zuzdpapq9ny3watvc9kja'
   }, data);
@@ -12,6 +14,11 @@ var requestApi = function (data, callback) {
     data: params,
     dataType: 'jsonp'
   };
+
+  // debug
+  console.debug(settings);
+  $.ajax(settings).success(callback);
+
 };
 
 
