@@ -7,11 +7,14 @@ var requestApi = function (data, callback) {
     apikey: 'j23zuzdpapq9ny3watvc9kja'
   }, data);
 
+
   var settings = {
     url: apiUrl,
     data: params,
     dataType: 'jsonp'
   };
+
+  $.ajax(settings).success(callback);
 };
 
 
@@ -43,11 +46,23 @@ var castingItem = function (item) {
   }
 };
 
+
 var detailsHtml = function (movie){
+
+  for(var key in movie) {
+    console.log('name = ' + key + ' value=' + movie[key]);
+  }
+
 
   var castList = movie.abridged_cast.map( function (item) {
     return castingItem(item);
   });
+
+
+  for(var key in movie) {
+
+
+  }
 
   return [
     '<div class="details">',
@@ -85,9 +100,11 @@ var detailsHtml = function (movie){
     '     </li>',
     '     <li> Ratings:',
     '       <ul>',
-    '         <li> Critics rating: ', movie.ratings.critics_rating, ' / Critics score: ', movie.ratings.critics_score,
+    '         <li> Critics rating: ', movie.ratings.critics_rating,
+    ' / Critics score: ', movie.ratings.critics_score,
     '         </li>',
-    '         <li> Audience rating: ', movie.ratings.audience_rating, ' / Audience score: ', movie.ratings.audience_score,
+    '         <li> Audience rating: ', movie.ratings.audience_rating,
+    ' / Audience score: ', movie.ratings.audience_score,
     '         </li>',
     '       </ul>',
     '     </li>',
@@ -104,16 +121,25 @@ var detailsHtml = function (movie){
 $(document.body).on('click', '.movie', function (event) {
   event.preventDefault();
 
-  console.log($(this).data('detailRequest'));
+  var movieTitle = $(this).text();
+  var detailRequest = $(this).data('detailRequest');
+  requestApi( { q : movieTitle }, function(response) { myApp2(response,
+      detailRequest);});
 });
 
 
-var myApp2 = function (response) {
-  var movie =  response.movies[0];
-  var movieItem = detailsHtml(movie);
+var myApp2 = function (response, detailRequest) {
+
+  var movieDataList = response.movies;
+  var movie = movieDataList.map( function(movieItem) {
+    if(movieItem.links.self == detailRequest) {
+      return detailsHtml(movieItem);
+    }
+  });
+
 
   $('#resultList').get(0).innerHTML = [
-    movieItem
+    movie
   ];
 
 };
@@ -124,14 +150,15 @@ $('#movieSearchForm').on('submit', function (event) {
 
   var movieTitle = $('#movieSearchForm input').val();
 
-  requestApi({ q: movieTitle  }, myApp);
+  requestApi({ q: movieTitle }, myApp);
 });
 
 
 var myApp = function (response) {
   var movieListData = response.movies;
   var movieList = movieListData.map(function (movieItem) {
-    return itemHtml(movieItem.posters.thumbnail, movieItem.title, movieItem.links.self);
+    return itemHtml(movieItem.posters.thumbnail, movieItem.title,
+      movieItem.links.self);
   });
 
   $('#movieList').get(0).innerHTML = [
