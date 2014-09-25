@@ -17,3 +17,37 @@ h1{
 h3{
   font-weight: 300;
 }
+
+.movie p {
+  text-decoration: underline;
+  color: #0022FF;
+}
+
+
+.movie p:hover {
+  text-decoration: underline;
+  color: #990099;
+}
+
+
+#details {
+  float: right;
+  background: #CACACE;
+  width: 400px;
+}
+
+#movieList {
+  float: left;
+}
+
+#movieList, #details {
+  clear:none;
+}
+
+li {
+  text-align: left;
+}
+
+span {
+font-weight: bold;
+}

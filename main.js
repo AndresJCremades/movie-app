@@ -34,38 +34,80 @@ var itemHtml = function (thumbnailSrc, title, detailUrl) {
   ].join('');
 };
 
-var castingItem = function (item) {
-  if(item.characters && item.characters.length > 0) {
+
+
+var createLi = function (field, value) {
+  //Uppercase
+  var fieldUc, valueR;
+  if ( field !== undefined ) {
+    fieldUc = field.substring(0,1).toUpperCase() +
+    field.substring(1, field.length);
+    if( field === 'runtime') {
+      valueR = [value, ' min.'].join('');
+    } else {
+      valueR = value;
+    }
+
     return [
       '<li>',
-      item.name,
+      '<span>',
+      fieldUc,
+      '</span>',
       ' : ',
-      item.characters[0],
+      valueR,
       '</li>'
-    ].join('');
+        ].join('');
   }
 };
 
+var findKey = function (obj, value) {
 
-var detailsHtml = function (movie){
+  var key;
+  var i = 0;
+  var keys = Object.keys(obj);
+  if ( value !== undefined ) {
+    while(obj[keys[i]] !== value && i < keys.length) {
+      i++;
+    }
 
-  for(var key in movie) {
-    console.log('name = ' + key + ' value=' + movie[key]);
+    return keys[i];
   }
+};
 
-
-  var castList = movie.abridged_cast.map( function (item) {
-    return castingItem(item);
+var createLiList = function(item, valuesList) {
+  var list = valuesList.map( function(itemValue ) {
+    return createLi(findKey(item, itemValue), itemValue);
   });
 
+  return list.join('');
+};
 
-  for(var key in movie) {
+var casting = function (castingList) {
+  var resultList;
+  if( castingList && castingList.length > 0) {
+    resultList = castingList.map( function (item) {
+      return [
+        '<li><span>',
+          item.name,
+      ': </span>',
+          item.characters,
+      '</li>'
+      ].join('');
+    });
 
-
+    return [
+      '<li><span>Cast :</span>',
+        '<ul>',
+          resultList.join(''),
+        '</ul>',
+      '</li>',
+        ].join('');
   }
+};
+
+var detailsHtml = function ( movie ) {
 
   return [
-    '<div class="details">',
     '   <h3>',
           movie.title,
     '   </h3>',
@@ -73,50 +115,35 @@ var detailsHtml = function (movie){
           movie.posters.thumbnail,
     '   ">',
     '   <ul>',
-    '     <li> Title: ',
-          movie.title,
-    '     </li>',
-    '     <li> ID: ',
-          movie.id,
-    '     </li>',
-    '     <li> Year: ',
-          movie.year,
-    '     </li>',
-    '     <li> MPAA Rating: ',
-          movie.mpaa_rating,
-    '     </li>',
-    '     <li> Duration: ',
-            movie.runtime,
-    ' min.</li>',
-    '     <li> Release dates:',
+          createLiList(movie, [movie.title, movie.year,
+              movie.mpaa_rating, movie.runtime]),
+    '     <li> <span>Release dates:</span>',
     '       <ul>',
-    '         <li> Theater: ',
-          movie.release_dates.theater,
+          createLiList(movie.release_dates, [movie.release_dates.theater,
+              movie.release_dates.dvd]),
+    '       </ul>',
+    '     </li>',
+    '     <li> <span>Ratings:</span>',
+    '       <ul>',
+    '         <li> <span>Critics:</span> ',
+    '           <ul>',
+          createLiList(movie.ratings, [ movie.ratings.critics_rating,
+            movie.ratings.critics_score ]),
+    '          </ul>',
     '         </li>',
-    '         <li> DVD: ',
-          movie.release_dates.dvd,
+    '         <li> <span>Audience: </span>',
+    '           <ul>',
+          createLiList(movie.ratings, [ movie.ratings.audience_rating,
+            movie.ratings.audience_score]),
+    '           </ul>',
     '         </li>',
     '       </ul>',
     '     </li>',
-    '     <li> Ratings:',
-    '       <ul>',
-    '         <li> Critics rating: ', movie.ratings.critics_rating,
-    ' / Critics score: ', movie.ratings.critics_score,
-    '         </li>',
-    '         <li> Audience rating: ', movie.ratings.audience_rating,
-    ' / Audience score: ', movie.ratings.audience_score,
-    '         </li>',
-    '       </ul>',
-    '     </li>',
-    '     <li> Cast:',
-    '       <ul>',
-            castList.join(''),
-    '       </ul>',
-    '     </li>',
-    '   </ul>',
-    '</div>'
+           casting(movie.abridged_cast),
+    '   </ul>'
   ].join('');
 };
+
 
 $(document.body).on('click', '.movie', function (event) {
   event.preventDefault();
@@ -138,9 +165,7 @@ var myApp2 = function (response, detailRequest) {
   });
 
 
-  $('#resultList').get(0).innerHTML = [
-    movie
-  ];
+  $('#details').get(0).innerHTML = movie.join('');
 
 };
 
