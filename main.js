@@ -1,6 +1,5 @@
-
+var key = ;
 var apiUrl = 'http://api.rottentomatoes.com/api/public/v1.0/movies.json';
-
 var requestApi = function (data, callback) {
 
   var params = $.extend({
@@ -18,19 +17,23 @@ var requestApi = function (data, callback) {
 };
 
 
-var itemHtml = function (thumbnailSrc, title, detailUrl) {
+var itemHtml = function (originalSrc, title, detailUrl) {
   return [
-    '<li',
+    '<tr',
     ' class="movie"',
     ' data-detail-request="' + detailUrl + '"',
     '>',
+    '<td>',
+    '   <img src="',
+          originalSrc,
+    '   ">',
+    '</td>',
+    '<td>',
     '   <p>',
         title,
     '   </p>',
-    '   <img src="',
-          thumbnailSrc,
-    '   ">',
-    '</li>'
+    '<td>',
+    '</tr>'
   ].join('');
 };
 
@@ -86,13 +89,22 @@ var casting = function (castingList) {
   var resultList;
   if( castingList && castingList.length > 0) {
     resultList = castingList.map( function (item) {
-      return [
-        '<li><span>',
-          item.name,
-      ': </span>',
-          item.characters,
-      '</li>'
-      ].join('');
+      if (item.characters === undefined) {
+        return [
+          '<li><span>',
+              item.name,
+              '</span>',
+          '</li>'
+          ].join('');
+      } else {
+        return [
+          '<li><span>',
+              item.name,
+          ': </span>',
+              item.characters,
+          '</li>'
+        ].join('');
+      }
     });
 
     return [
@@ -108,14 +120,10 @@ var casting = function (castingList) {
 var detailsHtml = function ( movie ) {
 
   return [
-    '   <h3>',
-          movie.title,
-    '   </h3>',
-    '   <img src="',
-          movie.posters.thumbnail,
-    '   ">',
+    '<img id="close" src="images/close.jpg">',
+    '<div id="details">',
     '   <ul>',
-          createLiList(movie, [movie.title, movie.year,
+          createLiList(movie, [movie.year,
               movie.mpaa_rating, movie.runtime]),
     '     <li> <span>Release dates:</span>',
     '       <ul>',
@@ -140,10 +148,14 @@ var detailsHtml = function ( movie ) {
     '       </ul>',
     '     </li>',
            casting(movie.abridged_cast),
-    '   </ul>'
+    '   </ul>',
+    '</div>'
   ].join('');
 };
 
+$(document.body).on('click', '#close', function () {
+
+});
 
 $(document.body).on('click', '.movie', function (event) {
   event.preventDefault();
@@ -157,6 +169,7 @@ $(document.body).on('click', '.movie', function (event) {
 
 var myApp2 = function (response, detailRequest) {
 
+  var search = 'li[data-detail-request="'+detailRequest+'"]';
   var movieDataList = response.movies;
   var movie = movieDataList.map( function(movieItem) {
     if(movieItem.links.self == detailRequest) {
@@ -164,13 +177,19 @@ var myApp2 = function (response, detailRequest) {
     }
   });
 
+  if( $('#details')) {
+    $('#details').remove();
+  }
 
-  $('#details').get(0).innerHTML = movie.join('');
+  $('#containerDetails').get(0).innerHTML = [
+        movie.join('')
+  ].join('');
 
 };
 
 $('#movieSearchForm').on('submit', function (event) {
   event.preventDefault();
+
   $('#resultList').load('main.js #resultList');
 
   var movieTitle = $('#movieSearchForm input').val();
@@ -182,14 +201,14 @@ $('#movieSearchForm').on('submit', function (event) {
 var myApp = function (response) {
   var movieListData = response.movies;
   var movieList = movieListData.map(function (movieItem) {
-    return itemHtml(movieItem.posters.thumbnail, movieItem.title,
+    return itemHtml(movieItem.posters.original, movieItem.title,
       movieItem.links.self);
   });
 
   $('#movieList').get(0).innerHTML = [
-    '<ul>',
+    '<table>',
         movieList.join(''),
-      '</ul>'
+      '</table>'
   ].join('');
 
 };

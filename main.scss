@@ -9,45 +9,80 @@ body{
 
 h1{
   font-size: 65px;
-  line-height: 1.2em;
-  border-bottom: #CCC solid 1px;
-  padding: 20px 0;
+  margin-bottom: 0;
 }
 
 h3{
   font-weight: 300;
-}
-
-.movie p {
-  text-decoration: underline;
-  color: #0022FF;
-}
-
-
-.movie p:hover {
-  text-decoration: underline;
-  color: #990099;
-}
-
-
-#details {
-  float: right;
-  background: #CACACE;
-  width: 400px;
+  line-height: 1.2em;
+  border-bottom: #CCC solid 1px;
+  padding-bottom: 20px;
 }
 
 #movieList {
+  width: 500px;
+  line-height: 1.2em;
+  border: #CCC solid 1px;
   float: left;
+
+  tr {
+    text-align: left;
+    line-height: 1.2em;
+    border: #CCC solid 1px;
+
+    img {
+      width: 80px;
+      height: auto;
+
+      line-height: 1.2em;
+      border: #CCC solid 1px;
+    }
+
+    p {
+      line-height: 1.2em;
+      border: #CCC solid 1px;
+    }
+  }
+
+
+  .movie {
+    td p {
+      text-decoration: underline;
+      color: #0022FF;
+    }
+
+    td p:hover {
+      text-decoration: underline;
+      color: #990099;
+    }
+
+    span {
+      font-weight: bold;
+    }
 }
 
-#movieList, #details {
+#containerDetails {
+  width: 350px;
+  line-height: 1.2em;
+  border: #CCC solid 1px;
+  float: right;
+  background-color: #D3D3D3;
+
+  ul {
+    text-align: left;
+  }
+}
+
+#movieList, #containerDetails {
   clear:none;
 }
 
-li {
-  text-align: left;
+#close {
+    width: 20px;
+    height: 20px;
+    float: right;
+    cursor: pointer;
+  }
 }
 
-span {
-font-weight: bold;
-}
+
