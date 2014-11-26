@@ -1,16 +1,31 @@
 <!DOCTYPE html>
 <html>
   <body>
-    <div id="headApp">
-    <h1>Seek & enjoy</h1>
-    <h3>Your movie seeker</h3>
-    <div id="containerForm">
-      <form class="form-wrapper cf">
-        <input type="text" placeholder="Find your movie" required>
-        <button type="submit"><img src="./images/search.png"></button>
-      </form>
+    <div id="container">
+      <div id="containerHeader">
+        <h1>Seek & enjoy</h1>
+        <h3>Your movie seeker</h3>
+        <div id="containerForm">
+          <form class="form-wrapper cf">
+            <div id="inputplusbuttons">
+              <input type="text" placeholder="Find your movie" required>
+              <div id="containerButtons">
+                <button id="seek" type="submit">Seek</button>
+                <button id="reset" type="submit">Reset</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div id="results">
+        <p>
+        </p>
+        <div id="movieList">
+        </div>
+        <div id="movieDetails">
+        </div>
+      </div>
     </div>
-  </div>
   </body>
 </html>
 
