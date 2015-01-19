@@ -1,7 +1,18 @@
+/* key = my Rotten Tomatoes api key which grant me 
+   to access the information 
+*/
 var key = ;
+
+/* The base URI to access all resources 
+*/
 var apiUrl = 'http://api.rottentomatoes.com/api/public/v1.0/movies.json';
+
+/* FUNCTION: requestApi
+   - Purpose: build a valid request api  
+*/
 var requestApi = function (data, callback) {
 
+/* Request params which are to be added to the apiUri */
   var params = $.extend({
     apikey: 'j23zuzdpapq9ny3watvc9kja'
   }, data);
@@ -16,6 +27,9 @@ var requestApi = function (data, callback) {
   $.ajax(settings).success(callback);
 };
 
+/* FUNCTION: itemHtml 
+   - Purpose: build a HTML item
+*/
 
 var itemHtml = function (originalSrc, title, detailUrl) {
   return [
@@ -37,122 +51,6 @@ var itemHtml = function (originalSrc, title, detailUrl) {
   ].join('');
 };
 
-
-
-var createLi = function (field, value) {
-  //Uppercase
-  var fieldUc, valueR;
-  if ( field !== undefined ) {
-    fieldUc = field.substring(0,1).toUpperCase() +
-    field.substring(1, field.length);
-    if( field === 'runtime') {
-      valueR = [value, ' min.'].join('');
-    } else {
-      valueR = value;
-    }
-
-    return [
-      '<li>',
-      '<span>',
-      fieldUc,
-      '</span>',
-      ' : ',
-      valueR,
-      '</li>'
-        ].join('');
-  }
-};
-
-var findKey = function (obj, value) {
-
-  var key;
-  var i = 0;
-  var keys = Object.keys(obj);
-  if ( value !== undefined ) {
-    while(obj[keys[i]] !== value && i < keys.length) {
-      i++;
-    }
-
-    return keys[i];
-  }
-};
-
-var createLiList = function(item, valuesList) {
-  var list = valuesList.map( function(itemValue ) {
-    return createLi(findKey(item, itemValue), itemValue);
-  });
-
-  return list.join('');
-};
-
-var casting = function (castingList) {
-  var resultList;
-  if( castingList && castingList.length > 0) {
-    resultList = castingList.map( function (item) {
-      if (item.characters === undefined) {
-        return [
-          '<li><span>',
-              item.name,
-              '</span>',
-          '</li>'
-          ].join('');
-      } else {
-        return [
-          '<li><span>',
-              item.name,
-          ': </span>',
-              item.characters,
-          '</li>'
-        ].join('');
-      }
-    });
-
-    return [
-      '<li><span>Cast :</span>',
-        '<ul>',
-          resultList.join(''),
-        '</ul>',
-      '</li>',
-        ].join('');
-  }
-};
-
-var detailsHtml = function ( movie ) {
-
-  return [
-    '<img id="close" src="images/close.jpg">',
-    '<div id="details">',
-    '   <ul>',
-          createLiList(movie, [movie.year,
-              movie.mpaa_rating, movie.runtime]),
-    '     <li> <span>Release dates:</span>',
-    '       <ul>',
-          createLiList(movie.release_dates, [movie.release_dates.theater,
-              movie.release_dates.dvd]),
-    '       </ul>',
-    '     </li>',
-    '     <li> <span>Ratings:</span>',
-    '       <ul>',
-    '         <li> <span>Critics:</span> ',
-    '           <ul>',
-          createLiList(movie.ratings, [ movie.ratings.critics_rating,
-            movie.ratings.critics_score ]),
-    '          </ul>',
-    '         </li>',
-    '         <li> <span>Audience: </span>',
-    '           <ul>',
-          createLiList(movie.ratings, [ movie.ratings.audience_rating,
-            movie.ratings.audience_score]),
-    '           </ul>',
-    '         </li>',
-    '       </ul>',
-    '     </li>',
-           casting(movie.abridged_cast),
-    '   </ul>',
-    '</div>'
-  ].join('');
-};
-
 $(document.body).on('click', '#close', function () {
 
 });
@@ -167,27 +65,9 @@ $(document.body).on('click', '.movie', function (event) {
 });
 
 
-var myApp2 = function (response, detailRequest) {
-
-  var search = 'li[data-detail-request="'+detailRequest+'"]';
-  var movieDataList = response.movies;
-  var movie = movieDataList.map( function(movieItem) {
-    if(movieItem.links.self == detailRequest) {
-      return detailsHtml(movieItem);
-    }
-  });
-
-  if( $('#details')) {
-    $('#details').remove();
-  }
-
-  $('#containerDetails').get(0).innerHTML = [
-        movie.join('')
-  ].join('');
-
-};
 
 $('#movieSearchForm').on('submit', function (event) {
+
   event.preventDefault();
 
   $('#resultList').load('main.js #resultList');
@@ -199,6 +79,7 @@ $('#movieSearchForm').on('submit', function (event) {
 
 
 var myApp = function (response) {
+  console.log("--> entrando en myApp");
   var movieListData = response.movies;
   var movieList = movieListData.map(function (movieItem) {
     return itemHtml(movieItem.posters.original, movieItem.title,
